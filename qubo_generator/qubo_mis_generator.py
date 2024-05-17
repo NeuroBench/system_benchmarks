@@ -43,6 +43,13 @@ class MISBenchmark:
 
     def __len__(self):
         return self.num_problems
+    
+    def save_problems(self, data_dir):
+        # TODO: from self.config_file produce the graphs and save them to data_dir
+
+    @staticmethod
+    def load_problems(self, data_dir):
+        # TODO: load pre-generated graphs
 
     @staticmethod
     def custom_graph(num_vertices: int, density: float, random_seed: int = 0):
