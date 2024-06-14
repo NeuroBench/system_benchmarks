@@ -2,27 +2,38 @@
 
 ## Benchmark Dataset
 
-The benchmark considers the maximum indpendent set (MIS) problem: Given an undirected graph, find the largest subset of vertices consisting of mutually unconnected vertices.
+Given an undirected graph $\mathcal{G}=(\mathcal{V}, \mathcal{E})$, an \emph{independent set} $\mathcal{I}$ is a subset of $\mathcal{V}$ such that, for any two vertices $u, v \in \mathcal{I}$, there is no edge connecting them. %, i.e., $\nexists \; e \in \mathcal{E} \;s.t.\; e=(u,v) \;\vee\; e=(v,u)$. 
+The **Maximum Independent Set (MIS) problem** consists in finding an independent set with maximum cardinality, as illustrated in the following figure:
 
-TODO: add math text or switch to a different file format that supports it.
+<figure>
+  <img src="https://github.com/lava-nc/lava-optimization/assets/86950058/53accd20-744a-4e36-b4dd-ccd17af44534" width="750" alt="A maximum ind"/>
+  <figcaption>This is the caption for the image.</figcaption>
+</figure>
+
+The MIS problem has a natural QUBO formulation: for each node $u\in\mathcal{V}$ in the graph, a binary variable $x_u$ is introduced to model the inclusion or not of $u$ in the candidate solution. Summing the quadratic terms $x_u^2$ will thus result in the size of the set of selected nodes. To penalize the selection of nodes that are not mutually independent, a penalization term is associated to the interactions $x_ux_v$ if $u$ and $v$ are connected. The resulting $\mathbf{Q}$ matrix coefficients are defined as
+$$
+q_{uv} = \begin{cases}
+    -1 &\text{if } u = v \\
+    \lambda &\text{if } u \neq v \text{ and } (u, v) \in \mathcal{E} \\
+    0 & \text{otherwise}
+\end{cases}
+$$
+
+where $\lambda>0$ is a large penalization term provided by NeuroBench. 
 
 The workload complexity is defined such that it can automatically grow over time, as neuromorphic systems mature and are able to support larger problems.
 
-- Number of nodes, spaced on a logarithmic scale: 500, 1000, 2500, 5000, ... TODO: what would be a reasonable starting point?
+- Number of nodes, spaced on a logarithmic scale: 10, 25, 50, 100, 250, 500, ...
 - Density of edges: 1%, 5%, 10%, 25%
 - Problem seeds: 0, 1, 2, 3, 4 are allowed for tuning. At evaluation time, for official results NeuroBench will announce five seeds for submission. Unofficial results may use seeds which are randomly generated at runtime.
 
 Each evaluation workload will be associated with a target optimality, which is the size of the largest independent set found using a conventional solver algorithm.
 
-Small workloads fewer than TODO nodes will be completely solved, and the target optimality will be the size of the globally maximum independent set.
+Small QUBO workloads with fewer than 1000 nodes will be solved to global optimality, corresponding to the true maximum independent set.
 
-Larger workloads cannot be reasonably globally solved. The DWave Tabu sampler will be used with 100 reads and 50 restarts, and the largest independent set found will set the target optimality for the tuning workload seeds. For evaluation workload seeds, the same method will be used to set the target optimality.
+Larger workloads cannot be reasonably globally solved. The DWave Tabu sampler will be used with 100 reads and 50 restarts, and the QUBO solution with the best cost found will set the target optimality for the tuning workload seeds. For evaluation workload seeds, the same method will be used to set the target optimality. The NeuroBench authors will provide benchmarking CPU solutions up to 5000 nodes. The first group that tackles workloads of an unprecedented size should provide the benchmark solutions via a pull request.
 
-TODO: Should we limit the time that the CPU solver is allowed? 
-
-TODO: Should we allow for the target optimality to be increased if someone finds a larger independent set with CPU / neuromorphic?
-
-Code for the generator for MIS, as well as the DWave Tabu search implementation, is located here: https://github.com/NeuroBench/system_benchmarks/tree/qubo/qubo_generator
+Code for the generator for MIS, as well as a wrapper to run DWave's Tabu search, is located here: [https://github.com/NeuroBench/system_benchmarks/tree/qubo/qubo_generator](https://github.com/NeuroBench/system_benchmarks/tree/qubo/qubo_generator).
 
 This code is expected to be used as the front-end data generator for all submissions. Submitters may take the general graph descriptions and modify the structure, this is not included in the reported results.
 The code also supports arbitrary workload generation, which is expected to be used to measure the largest supported workload size of the system (see Task and Metrics).
@@ -35,14 +46,13 @@ No constraints are placed on the algorithmic implementation, nor the hardware se
 
 ### Optimality Thresholds
 
-Based on the target optimality c_target for each workload, the normalized optimality score of a solution is defined as (1 / n) * abs((c - c_target) / c_target). 
-Where c is the size of the largest independent set found by the system at that point in time.
+Based on the target optimality $c_\mathrm{target}$ for each workload, the normalized optimality score of a solution is defined as 
+$$
+\mathrm{abs}(\frac{c - c_{\mathrm{target}}} {c_\mathrm{target}})\ .
+$$ 
+Where c is the cost of the best solution to the QUBO found by the system at that point in time.
 
-The score thresholds are TODO, see below
-
-TODO: normalizing by dividing by the graph size makes it so that the 0.1/0.5/0.01 don't make any sense. E.g. for a graph size of 1,000,000 the score would always be on the order of 0.000001. The score needs a different definition. Is there any score that we could use where it's possible to show that you exceed the target?
-
-For each threshold, the submission reports latency (from beginning the workload), and system energy.
+For each threshold, the submission reports the cost of the best solution, latency between start of the solver and finding the reported solution, and system energy.
 
 If the system does not reach the score threshold, no result is reported. All problem seeds must reach a score threshold in order for the result to be included in the official leaderboard, otherwise that particular result will be left blank.
 
