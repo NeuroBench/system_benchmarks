@@ -35,12 +35,10 @@ No constraints are placed on the algorithmic implementation, nor the hardware se
 
 ### Optimality Thresholds
 
-Based on the target optimality c_target for each workload, the normalized optimality score of a solution is defined as (1 / n) * abs((c - c_target) / c_target). 
-Where c is the size of the largest independent set found by the system at that point in time.
+Based on the target optimality c_target_s for each workload and seed, the normalized optimality score of a solution for a given workload size (graph size, density) is defined as (1 / n) * \sum_{s} abs((c - c_target_s) / c_target_s).
+Where c is the size of the largest independent set found by the system at that point in time, and n is the number of trials/seeds.
 
-The score thresholds are TODO, see below
-
-TODO: normalizing by dividing by the graph size makes it so that the 0.1/0.5/0.01 don't make any sense. E.g. for a graph size of 1,000,000 the score would always be on the order of 0.000001. The score needs a different definition. Is there any score that we could use where it's possible to show that you exceed the target?
+The score thresholds are 0.1, 0.05, and 0.01.
 
 For each threshold, the submission reports latency (from beginning the workload), and system energy.
 
