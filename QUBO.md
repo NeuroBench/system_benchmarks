@@ -52,6 +52,8 @@ $$
 $$ 
 Where c is the cost of the best solution to the QUBO found by the system at that point in time.
 
+The score thresholds are 0.1, 0.05, and 0.01.
+
 For each threshold, the submission reports the cost of the best solution, latency between start of the solver and finding the reported solution, and system energy.
 
 If the system does not reach the score threshold, no result is reported. All problem seeds must reach a score threshold in order for the result to be included in the official leaderboard, otherwise that particular result will be left blank.
