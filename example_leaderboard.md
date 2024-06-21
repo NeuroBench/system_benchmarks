@@ -33,8 +33,10 @@ TODO/?: Static/floor power, Host CPU, Model/Algorithm name
 ### ASC
 
 - Evaluation set accuracy
-- Energy in uJ
-- Latency in ms
+- Power in SI units
+- Energy in SI units
+- Latency (= inverse bandwidth?) in SI units
+- Latency in SI units
 
 ### QUBO-MIS
 
