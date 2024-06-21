@@ -31,6 +31,7 @@ Accuracy of the predictions on the test set, measured from the system and not in
 ### Latency
 
 Latency is the average time per inference. The final result should be averaged over all samples in the test set, and include standard error.
+[//]: # (That definition of latency is rather an "inverse (instruction) bandwidth", i.e. NOT aligned with the "usual" definition of latency (which would be first sample started to first sample classified)!)
 
 The time for each inference begins when data has been loaded into on-board or on-chip memory. TODO: is it safe to assume that the systems will have memory? what if they do not?
 
