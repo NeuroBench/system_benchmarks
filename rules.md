@@ -50,6 +50,7 @@ The submitter must also share all software and documentation necessary for repro
 The auditor will verify the submitted results and methodology.
 
 For results, the auditor will try a maximum of 5 times to replicate the submitter's claimed results using the submitter's device and software. If the averaged results are not within 95% of the claimed results, the submitter will be required to either use the auditor's result as the official result, or generate a new result which is at most 5% greater than the auditor's result.
+[//]: # (95% for energy, time, etc. probably okay but for result "quality"? For ASC case probably too relaxed, for QUBO might be too hard?)
 
 For methodology, the auditor will inspect the documentation of the measurement utilities. The auditor will determine whether the measurements faithfully and fairly capture the performance and efficiency of the system as outlined by the benchmark rules as well as by the report written by the submitter. The auditor may attempt to verify the measurement by using tools such as a multimeter for full-system wall-power analysis.
 
