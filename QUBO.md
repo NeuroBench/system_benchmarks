@@ -8,7 +8,7 @@ TODO: add math text or switch to a different file format that supports it.
 
 The workload complexity is defined such that it can automatically grow over time, as neuromorphic systems mature and are able to support larger problems.
 
-- Number of nodes, spaced on a logarithmic scale: 500, 1000, 2500, 5000, ... TODO: what would be a reasonable starting point?
+- Number of nodes, spaced on a logarithmic scale: 100, 500, 1000, 2500, 5000, ... TODO: what would be a reasonable starting point?
 - Density of edges: 1%, 5%, 10%, 25%
 - Problem seeds: 0, 1, 2, 3, 4 are allowed for tuning. At evaluation time, for official results NeuroBench will announce five seeds for submission. Unofficial results may use seeds which are randomly generated at runtime.
 
