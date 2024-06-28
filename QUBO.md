@@ -1,9 +1,19 @@
 # Quadratic Unconstrained Binary Optimization for Maximum Independent Set (QUBO-MIS) Benchmark Specifications
 
+## Quadratic Unconstrained Binary Optimization (QUBO)
+
+**Quadratic Unconstrained Binary Optimization** refers to the problem to find the binary variable assignment 
+$$ x_i\in\{0, 1\}$$
+that optimizes the quadratic cost function
+$$ \min_{\mathbf{x}\in\{0,1\}^n} \mathbf{x}^T\mathbf{Q}\mathbf{x} + \mathbf{c}^T\mathbf{x}$$
+subject to no constraints.
+
+
+
 ## Benchmark Dataset
 
-Given an undirected graph $\mathcal{G}=(\mathcal{V}, \mathcal{E})$, an \emph{independent set} $\mathcal{I}$ is a subset of $\mathcal{V}$ such that, for any two vertices $u, v \in \mathcal{I}$, there is no edge connecting them, i.e., $\nexists \; e \in \mathcal{E} \;s.t.\; e=(u,v) \;\vee\; e=(v,u)$. 
-The **Maximum Independent Set (MIS) problem** consists in finding an independent set with maximum cardinality, as illustrated in the following figure:
+The neuromorphic solvers for QUBO will be benchmarked using **Maximum Independent Set** workloads. Given an undirected graph $\mathcal{G}=(\mathcal{V}, \mathcal{E})$, an **independent set** $\mathcal{I}$ is a subset of $\mathcal{V}$ such that, for any two vertices $u, v \in \mathcal{I}$, there is no edge connecting them, i.e., $\nexists \; e \in \mathcal{E} \;s.t.\; e=(u,v) \;\vee\; e=(v,u)$. 
+The Maximum Independent Set (MIS) problem consists in finding an independent set with maximum cardinality, as illustrated in the following figure:
 
 <figure>
   <img src="https://github.com/lava-nc/lava-optimization/assets/86950058/53accd20-744a-4e36-b4dd-ccd17af44534" width="750" alt="A maximum ind"/>
