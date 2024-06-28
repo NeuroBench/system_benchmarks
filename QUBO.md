@@ -2,10 +2,10 @@
 
 ## Quadratic Unconstrained Binary Optimization (QUBO)
 
-**Quadratic Unconstrained Binary Optimization** refers to the problem to find the binary variable assignment 
-$$ x_i\in\{0, 1\}$$
-that optimizes the quadratic cost function
+**Quadratic Unconstrained Binary Optimization** refers to the problem to find the binary variable assignment $x_i\in\{0, 1\}$ that optimizes the quadratic cost function
+
 $$ \min_{\mathbf{x}\in\{0,1\}^n} \mathbf{x}^T\mathbf{Q}\mathbf{x} + \mathbf{c}^T\mathbf{x}$$
+
 subject to no constraints.
 
 
