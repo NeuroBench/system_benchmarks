@@ -2,15 +2,16 @@
 
 ## Benchmark Dataset
 
-Given an undirected graph $\mathcal{G}=(\mathcal{V}, \mathcal{E})$, an \emph{independent set} $\mathcal{I}$ is a subset of $\mathcal{V}$ such that, for any two vertices $u, v \in \mathcal{I}$, there is no edge connecting them. %, i.e., $\nexists \; e \in \mathcal{E} \;s.t.\; e=(u,v) \;\vee\; e=(v,u)$. 
+Given an undirected graph $\mathcal{G}=(\mathcal{V}, \mathcal{E})$, an \emph{independent set} $\mathcal{I}$ is a subset of $\mathcal{V}$ such that, for any two vertices $u, v \in \mathcal{I}$, there is no edge connecting them, i.e., $\nexists \; e \in \mathcal{E} \;s.t.\; e=(u,v) \;\vee\; e=(v,u)$. 
 The **Maximum Independent Set (MIS) problem** consists in finding an independent set with maximum cardinality, as illustrated in the following figure:
 
 <figure>
   <img src="https://github.com/lava-nc/lava-optimization/assets/86950058/53accd20-744a-4e36-b4dd-ccd17af44534" width="750" alt="A maximum ind"/>
-  <figcaption>This is the caption for the image.</figcaption>
+<!--   <figcaption>This is the caption for the image.</figcaption> -->
 </figure>
 
 The MIS problem has a natural QUBO formulation: for each node $u\in\mathcal{V}$ in the graph, a binary variable $x_u$ is introduced to model the inclusion or not of $u$ in the candidate solution. Summing the quadratic terms $x_u^2$ will thus result in the size of the set of selected nodes. To penalize the selection of nodes that are not mutually independent, a penalization term is associated to the interactions $x_ux_v$ if $u$ and $v$ are connected. The resulting $\mathbf{Q}$ matrix coefficients are defined as
+
 $$
 q_{uv} = \begin{cases}
     -1 &\text{if } u = v \\
@@ -19,9 +20,9 @@ q_{uv} = \begin{cases}
 \end{cases}
 $$
 
-where $\lambda>0$ is a large penalization term provided by NeuroBench. 
+where $\lambda>0$ is a large penalization term provided by the problem formulation. 
 
-The workload complexity is defined such that it can automatically grow over time, as neuromorphic systems mature and are able to support larger problems.
+The benchmark's workload complexity is defined such that it can automatically grow over time, as neuromorphic systems mature and are able to support larger problems.
 
 - Number of nodes, spaced on a logarithmic scale: 10, 25, 50, 100, 250, 500, ...
 - Density of edges: 1%, 5%, 10%, 25%
@@ -47,10 +48,12 @@ The solver needs to include a module that tracks the cost of considered solution
 ### Optimality Thresholds
 
 Based on the target optimality $c_\mathrm{target}$ for each workload, the normalized optimality score of a solution is defined as 
+
 $$
 \mathrm{abs}(\frac{c - c_{\mathrm{target}}} {c_\mathrm{target}})\ .
 $$ 
-Where c is the cost of the best solution to the QUBO found by the system at that point in time.
+
+Where $c$ is the cost of the best solution to the QUBO found by the system at that point in time.
 
 The score thresholds are 0.1, 0.05, and 0.01.
 
@@ -76,7 +79,7 @@ Ultimately, as neuromorphic systems are not matured, a singular power measuremen
 
 ### Maximum supported workload size
 
-Separately from the benchmark dataset, the submission should also report the largest supported workload size for the given system, at both 1% edge density and 100% edge density (fully connected). The result are the greatest values A and B such that the workload (A, 1%, 0) and (B, 100%, 0) can be loaded onto the system and a solution can be found which is better than the trivial solution of cost 0.
+Separately from the benchmark dataset, the submission should also report the largest supported workload size for the given system, at both 1% edge density and 100% edge density (fully connected). The result are the greatest values $A$ and $B$ such that the workloads $(node, density, seed)$ of $(A, 1\\%, 0)$ and $(B, 100\\%, 0)$ can be loaded onto the system and a solution can be found which is better than the trivial solution of cost 0.
 
 ## Tuning
 
