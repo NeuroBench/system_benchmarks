@@ -4,7 +4,7 @@
 
 **Quadratic Unconstrained Binary Optimization** refers to the problem to find the binary variable assignment $x_i\in\{0, 1\}$ that optimizes the quadratic cost function
 
-$$ \min_{\mathbf{x}\in\{0,1\}^n} \mathbf{x}^T\mathbf{Q}\mathbf{x} + \mathbf{c}^T\mathbf{x}$$
+$$ \min_{\mathbf{x}\in\{0,1\}^n} c(\mathbf{x}) = \min_{\mathbf{x}\in\{0,1\}^n} \mathbf{x}^T\mathbf{Q}\mathbf{x}$$
 
 subject to no constraints.
 
@@ -30,7 +30,7 @@ q_{uv} = \begin{cases}
 \end{cases}
 $$
 
-where $\lambda>0$ is a large penalization term provided by the problem formulation. 
+where $\lambda>0$ is a large penalization term that will be provided and is constant across all workloads. 
 
 The benchmark's workload complexity is defined such that it can automatically grow over time, as neuromorphic systems mature and are able to support larger problems.
 
