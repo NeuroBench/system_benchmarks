@@ -12,7 +12,7 @@ Of the 9 real / simulated recoding devices, 1 real device is used: "a"
 
 Audio samples are sliced into 1 second samples. The audio may be resampled to a different frequency as a preprocessing step, which is not included in inference measurement.
 
-The train/val/test split is TODO/1320/13000 samples.
+The train/val/test split is TODO/1320/16240 samples.
 
 A NeuroBenchDataset (PyTorch) compliant dataset file is available here: https://github.com/NeuroBench/system_benchmarks/blob/audio_scene_classification/utils/dcase_audio_scene_classification.py
 
