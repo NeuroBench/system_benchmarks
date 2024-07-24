@@ -78,6 +78,17 @@ class SceneData():
         self.filtered_files = {"x_train": [], "y_train": [], "x_test": [], "y_test": [], "x_eval": [], "y_eval": []}
         self.data = {"x_train": None, "y_train": None, "x_test": None, "y_test": None, "x_eval": None, "y_eval": None}
 
+        # Adding extra files
+        train_files = np.genfromtxt(self.meta_files_dir / "fold1_train.csv", dtype=str, skip_header=1)[:, 0]
+        train_files = np.array([f.split("/")[-1] for f in train_files])  # remove subfolder
+        eval_files = np.genfromtxt(self.meta_files_dir / "fold1_evaluate.csv", dtype=str, skip_header=1)[:, 0]
+        eval_files = np.array([f.split("/")[-1] for f in eval_files])  # remove subfolder
+        all_files = np.array([f.name for f in self.raw_data_dir.glob("*.wav")])
+        extra_test_files = np.array(list(set(all_files) - set(train_files) - set(eval_files)))
+        extra_test_labels = np.array([x.split('-')[0] for x in extra_test_files])
+        extra_test_df = pd.DataFrame({"filename": extra_test_files, "scene_label": extra_test_labels})
+        self.all_files["eval"] = pd.concat([self.all_files["eval"], extra_test_df])
+
         if valid_devices is not None:
             glob_patterns = []
             for device in valid_devices:
@@ -157,3 +168,18 @@ class SceneData():
         self.eval_dataset = SceneDataset(self.data["x_eval"], self.data["y_eval"])
 
         return self.train_dataset, self.test_dataset, self.eval_dataset
+
+
+if __name__ == "__main__":
+    cwd = Path(__file__).parent
+
+    dataset = SceneData(cwd / "data/raw/",
+                        meta_files_dir=cwd / "data/",
+                        valid_scenes=["airport", "street_traffic", "bus", "park"],
+                        valid_devices=['a'],
+                        target_sample_rate=8000,
+                        max_samples_per_scene=10,
+                        resize_time=1)
+
+    for key, value in dataset.data.items():
+        print(key, value.shape)
