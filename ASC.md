@@ -22,7 +22,7 @@ This code is expected to be used as the front-end data generator for all submiss
 
 ## Task and Metrics
 
-After training a model using the training and validation set, the submitter will report test set accuracy, as well as latency and energy per inference on the system. 
+After training a model using the training and validation set, the submitter will report test set accuracy, as well as latency and energy per inference on the system. The test split should not be used to train or tune the model, only the train and val splits.
 
 Audio samples will be processed in batch-size 1, in which one sample is processed at a time and the next sample is not processed until the previous one is finished.
 
