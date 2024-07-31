@@ -8,7 +8,7 @@ The report will be linked in the official leaderboard, and included in its entir
 
 Official submissions are subject to the possibility of an audit, in which case not only the submitted results, but also the associated report may be inspected. See the Auditing Process in the Rules document.
 
-## Requirements (TODO)
+## Requirements
 
 - An outline of the system architecture
 - An outline of the algorithm used (model architecture, tuning)
@@ -20,4 +20,3 @@ Official submissions are subject to the possibility of an audit, in which case n
 	- Power measurement time resolution / frequency
 - Re-iterate results
 	- Including separation into pre-processing and inference, if applicable
-	- TODO: Separation of static and dynamic power? This should be stated as floor power since we only measure during activity?
