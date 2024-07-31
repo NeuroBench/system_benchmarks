@@ -32,8 +32,7 @@ One inference is defined as the processing of one second of audio data. Inferenc
 
 Pre-processing in general can be defined as feature extraction or the conversion of raw audio data into a format that is suitable for inference. Latency and energy of pre-processing must be included in benchmark measurement, and will be reported separately from inference. 
 
-In certain systems, e.g. Synsense Xylo, pre-processing blocks use analog hardware on-chip to directly convert real-time analog microphone output to digital spikes for inference. In order to operate inference from a digitally-encoded dataset, this pre-processing must be simulated and the spikes are sent through a side-channel directly to the inference block. For such cases, the reported pre-processing measurements will be for the analog hardware running in real-time, and not the simulated side-channel. TODO: how will the measurement be done, need some kind of disclaimer in the report that the result will not be completely reflective of the dataset.
-
+In certain systems, e.g. Synsense Xylo, pre-processing blocks use analog hardware on-chip to directly convert real-time analog microphone output to digital spikes for inference. In order to operate inference from a digitally-encoded dataset, this pre-processing must be simulated and the spikes are sent through a side-channel directly to the inference block. For such cases, the reported pre-processing measurements will be for the analog hardware running in real-time on the dataset audio played over speakers into the device microphone.
 
 ### Accuracy
 
@@ -45,18 +44,15 @@ Latency is the average time per pre-processing and inference. The final result s
 
 The time begins when data has been loaded into on-board or on-chip memory and is prepared to be processed. The time ends when the last timestep of the sequence has completed processing.
 
-### Energy
+### Power / Energy
 
-TODO: define power / energy metric and how it should be measured / calculated. 
+Floor power and total power should be reported, where floor power is power of the chip when it has been configured and it prepared to begin processing. Note that this is different from idle power, in which the device may be in a lower-power sleeping state. Total power is the average power consumed during processing.
 
-1. How is floor/static power measured, is this converted to floor/static energy?
-2. Any processing units which should be included / not necessarily included?
+Both floor and total power should be converted to floor and total energy per inference by multiplying power by the averaged inference latency. For real-time processing, e.g. analog pre-processing, the latency should simply equal the data time (one second).
 
-The energy consumed in any given processing is calculated as the average power during the inference multiplied by the latency of the inference. The submitter should report the average energy over all samples, including standard error.
+The power measurement should include all computational components and power domains which are active during the workload processing. 
 
-The power measurement should include all computational components and power domains which are active during the workload processing. This includes:
-
-- TODO: specific things which should be included / not needed to be included (e.g. memory)
+If applicable, power may be measured over longer data sequences (e.g. 5 seconds rather than 1 second), such that configuration costs are amortized over a longer period of processing. This should be done separately from accuracy and latency experiments, and should be clearly detailed in the associated submission report.
 
 Ultimately, as neuromorphic systems are not matured, a singular power measurement method cannot be applied to all submissions. It is the responsibility of the submitter to faithfully capture all active processing components for their system and fairly outline their methodology in the report. Official submissions are subject to potential audits during which an auditor will inspect the methodology and request additions or revisions to the results and report if necessary.
 
