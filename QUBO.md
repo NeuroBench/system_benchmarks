@@ -1,4 +1,4 @@
-# Quadratic Unconstrained Binary Optimization for Maximum Independent Set (QUBO-MIS) Benchmark Specifications
+# Quadratic Unconstrained Binary Optimization (QUBO) Benchmark Specifications
 
 ## Quadratic Unconstrained Binary Optimization (QUBO)
 
@@ -11,6 +11,8 @@ subject to no constraints.
 
 
 ## Benchmark Dataset
+
+### Approximating Maximum Independent Set
 
 The neuromorphic solvers for QUBO will be benchmarked using **Maximum Independent Set** workloads. Given an undirected graph $\mathcal{G}=(\mathcal{V}, \mathcal{E})$, an **independent set** $\mathcal{I}$ is a subset of $\mathcal{V}$ such that, for any two vertices $u, v \in \mathcal{I}$, there is no edge connecting them, i.e., $\nexists \; e \in \mathcal{E} \;s.t.\; e=(u,v) \;\vee\; e=(v,u)$. 
 The Maximum Independent Set (MIS) problem consists in finding an independent set with maximum cardinality, as illustrated in the following figure:
@@ -25,12 +27,14 @@ The MIS problem has a natural QUBO formulation: for each node $u\in\mathcal{V}$ 
 $$
 q_{uv} = \begin{cases}
     -1 &\text{if } u = v \\
-    \lambda &\text{if } u \neq v \text{ and } (u, v) \in \mathcal{E} \\
-    0 & \text{otherwise}
+    4 &\text{if } u \neq v \text{ and } (u, v) \in \mathcal{E} \\
+    0 & \text{otherwise.}
 \end{cases}
 $$
 
-where $\lambda>0$ is a large penalization term that will be provided and is constant across all workloads. 
+The MIS problem is NP-hard and intractable, and therefore any solver system approximates a solution. Therefore, the cost of the QUBO formulation ($\mathbf{x}^T\mathbf{Q}\mathbf{x}$) is used to assess solutions, and solutions are not restricted to being *maximum* nor *independent sets*. The QUBO formulation ensures that any non-independent set will always have a higher cost than a corresponding independent set with conflicting nodes removed.
+
+### Workloads
 
 The benchmark's workload complexity is defined such that it can automatically grow over time, as neuromorphic systems mature and are able to support larger problems.
 
@@ -53,7 +57,11 @@ The code also supports arbitrary workload generation, which is expected to be us
 
 Given each workload, report the latency and energy to meet optimality thresholds. The average over 5 seeds for each workload is officially listed, as well as standard error. Results for all 5 seeds should be included in the submission report.
 
-The solver needs to include a module that tracks the cost of considered solutions, to identify if it has reached the target optimality. The computational demand and energy for this module must be included in the benchmarking results. Apart from this, no constraints are placed on the algorithmic implementation, nor the hardware setup. Algorithm and system parameter tuning is restricted, see Tuning below.
+The solver needs to include a module that tracks the cost of considered solutions, to identify if it has reached the target optimality. The computational demand and energy for this module must be included in the benchmarking results. 
+
+No other constraints are placed on the algorithmic implementation, nor the hardware setup of the solver system. The system may process the workload using any internal representation, but it must produce the binary vector $\mathbf{x}$ which is used to calculate solution cost $\mathbf{x}^T\mathbf{Q}\mathbf{x}$ as defined above. 
+
+Algorithm and system parameter tuning is restricted, see Tuning below.
 
 ### Optimality Thresholds
 
