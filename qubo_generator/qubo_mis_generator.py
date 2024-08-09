@@ -1,4 +1,6 @@
-# from lava.lib.optimization.utils.generators.mis import MISProblem
+import os
+import numpy as np
+
 from mis import MISProblem
 
 class MISBenchmark:
@@ -13,7 +15,7 @@ class MISBenchmark:
     num_vertices,density,random_seed,c_optimal
 
     By default, the problems allowed for tuning the system are the following:
-    - num_vertices: [25, 50, 100, 250, 500, 1000, 2500, 5000]
+    - num_vertices: [10, 25, 50, 100, 250, 500, 1000, 2500, 5000]
     - density:      [0.01, 0.05, 0.10, 0.25]
     - random_seed:  [0, 1, 2, 3, 4]
 
@@ -37,19 +39,37 @@ class MISBenchmark:
 
                 num_vertices, density, random_seed, c_optimal = line.split(',')
                 mis = MISProblem.from_random_uniform(int(num_vertices), float(density), int(random_seed))
-                # qubo_matrix = mis.get_qubo_matrix(w_diag=1, w_off=8)
-                qubo_matrix = mis.get_qubo_matrix()
+                qubo_matrix = mis.get_qubo_matrix(w_diag=1, w_off=8)
                 yield qubo_matrix, int(num_vertices), float(density), int(random_seed), int(c_optimal)
 
     def __len__(self):
         return self.num_problems
     
-    def save_problems(self, data_dir):
-        # TODO: from self.config_file produce the graphs and save them to data_dir
+    def save_problems(self, save_dir):
+        with open(self.config_file, 'r') as f:
+            for line in f:
+                if line.startswith('num_vertices'):
+                    continue
 
-    @staticmethod
+                num_vertices, density, random_seed, c_optimal = line.split(',')
+                mis = MISProblem.from_random_uniform(int(num_vertices), float(density), int(random_seed))
+                qubo_matrix = mis.get_qubo_matrix(w_diag=1, w_off=8)
+
+                filename = f'{num_vertices}_{density}_{random_seed}.npy'
+                np.save(os.path.join(save_dir, filename), qubo_matrix) # uncompressed, not very large
+
     def load_problems(self, data_dir):
-        # TODO: load pre-generated graphs
+        with open(self.config_file, 'r') as f:
+            for line in f:
+                if line.startswith('num_vertices'):
+                    continue
+
+                num_vertices, density, random_seed, c_optimal = line.split(',')
+                
+                filename = f'{num_vertices}_{density}_{random_seed}.npy'
+                qubo_matrix = np.load(os.path.join(data_dir, filename))
+
+                yield qubo_matrix, int(num_vertices), float(density), int(random_seed), int(c_optimal)
 
     @staticmethod
     def custom_graph(num_vertices: int, density: float, random_seed: int = 0):
@@ -66,4 +86,9 @@ class MISBenchmark:
 
         return qubo_matrix
 
+if __name__ == '__main__':
+    benchmark = MISBenchmark('default_config.csv')
 
+    # save dataset
+    dataset_dir = './data/qubo_mis_dataset'
+    benchmark.save_problems(dataset_dir)

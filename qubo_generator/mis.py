@@ -176,7 +176,8 @@ class MISProblem:
                 "a correct formulatin of the problem."
             )
         q = -w_diag * np.eye(self.num_vertices) + w_off / 2 * self._adjacency
-        return q.astype(int)
+        # return q.astype(int)
+        return q.astype(np.int8)
 
     def find_maximum_independent_set(self) -> np.ndarray:
         """
