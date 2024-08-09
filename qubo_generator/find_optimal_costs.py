@@ -5,13 +5,9 @@ warnings.filterwarnings('ignore') # ignore warning from netx
 
 from qubo_mis_generator import MISBenchmark
 import csv
-
 import json
-
-import numba as nb
 import numpy as np
-
-from typing import Callable, Dict, Tuple, Union
+from brute_solver import solve_cpu, solve_gpu, bits
 
 from dimod import BinaryQuadraticModel, as_samples
 from tabu import TabuSampler
@@ -50,60 +46,28 @@ def check_mis_bqm(bqm, sample):
     
     return True
 
-# Sourced from https://github.com/AlexanderNenninger/QUBOBrute
-@nb.njit(fastmath=True)
-def bits(n: Union[int, np.intp], nbits: int) -> np.ndarray:
-    """Turn n into an array of float32.
-
-    Args:
-        n (int)
-        nbits (int): length of output array
-
-    Returns:
-        The bits of n in an array of float32
-    """
-    bits = np.zeros(nbits, dtype=np.float32)
-    i = 0
-    while n > 0:
-        n, rem = n // 2, n % 2
-        bits[i] = rem
-        i += 1
-    return bits
-
-# Sourced from https://github.com/AlexanderNenninger/QUBOBrute
-@nb.njit(parallel=True, fastmath=True)
-def brute_force_solve(Q):
-    """Calculate all possible values of the QUBO H(x) = x^T Q x in parallel on the CPU.
-
-    Args:
-        Q (np.ndarray)
-
-    Returns:
-        np.ndarray: all possible values H can take.
-    """
-    Q = Q.astype(np.float32)
-    nbits = Q.shape[0]
-    N = 2**nbits
-    out = np.zeros(N, dtype=np.float32)
-    for i in nb.prange(N):
-        xs = bits(i, nbits)
-        out[i] = xs @ Q @ xs
-
-    return out
-
 if __name__ == '__main__':
     benchmark = MISBenchmark('config_no_costs.csv')
     dataset_dir = './data/qubo_mis_dataset'
 
-    costs = {}
+    # look for temp costs file
+    try:
+        with open('costs.json', 'r') as f:
+            costs = json.load(f)
+    except FileNotFoundError:
+        costs = {}
 
     for qubo_matrix, num_vertices, density, seed, _ in benchmark.load_problems(dataset_dir):
         print("Problem: ", num_vertices, density, seed)
         key = f'{num_vertices}_{density}_{seed}'
 
+        if key in costs:
+            continue
+
         if num_vertices < 1000:
             # brute force solve
-            bf_costs = brute_force_solve(qubo_matrix)
+            # bf_costs = solve_gpu(qubo_matrix, 0)
+            bf_costs = solve_cpu(qubo_matrix.astype(np.float32), 0)
             c_optimal = np.min(bf_costs)
             idx = np.argmin(bf_costs)
             sample = bits(idx, qubo_matrix.shape[0])
