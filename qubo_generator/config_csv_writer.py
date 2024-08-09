@@ -6,7 +6,7 @@ density = [0.01, 0.05, 0.10, 0.25]
 random_seed = [0, 1, 2, 3, 4]
 c_optimal = -1   # TODO: run DWave Tabu search to find c_optimal
 
-with open('default_config.csv', 'w', newline='') as f:
+with open('config_no_costs.csv', 'w', newline='') as f:
 	writer = csv.writer(f)
 	writer.writerow(header)
 	for nv in num_vertices:
