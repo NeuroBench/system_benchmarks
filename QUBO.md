@@ -38,15 +38,17 @@ The MIS problem is NP-hard and intractable, and therefore any solver system appr
 
 The benchmark's workload complexity is defined such that it can automatically grow over time, as neuromorphic systems mature and are able to support larger problems.
 
-- Number of nodes, spaced on a logarithmic scale: 10, 25, 50, 100, 250, 500, ...
+- Number of nodes, spaced on a logarithmic scale: 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, ...
 - Density of edges: 1%, 5%, 10%, 25%
 - Problem seeds: 0, 1, 2, 3, 4 are allowed for tuning. At evaluation time, for official results NeuroBench will announce five seeds for submission. Unofficial results may use seeds which are randomly generated at runtime.
 
-Each evaluation workload will be associated with a target optimality, which is the size of the largest independent set found using a conventional solver algorithm.
+Each workload will be associated with a target optimality, which is the minimum cost found using a conventional solver algorithm.
 
 Small QUBO workloads with fewer than 1000 nodes will be solved to global optimality, corresponding to the true maximum independent set.
 
-Larger workloads cannot be reasonably globally solved. The DWave Tabu sampler will be used with 100 reads and 50 restarts, and the QUBO solution with the best cost found will set the target optimality for the tuning workload seeds. For evaluation workload seeds, the same method will be used to set the target optimality. The NeuroBench authors will provide benchmarking CPU solutions up to 5000 nodes. The first group that tackles workloads of an unprecedented size should provide the benchmark solutions via a pull request.
+Larger workloads cannot be reasonably globally solved. The DWave Tabu sampler will be used with 100 reads and 50 restarts, and the QUBO solution with the best cost found will set the target optimality for the tuning workload seeds. For evaluation workload seeds, the same method will be used to set the target optimality. 
+
+The NeuroBench authors will provide benchmarking CPU solutions up to 5000 nodes. Submissions are encouraged to continue scaling up the workload size along the pattern to demonstrate the capacity of their systems. The first group that tackles workloads of an unprecedented size should provide the benchmark solutions via a pull request.
 
 Code for the generator for MIS, as well as a wrapper to run DWave's Tabu search, is located here: [https://github.com/NeuroBench/system_benchmarks/tree/qubo/qubo_generator](https://github.com/NeuroBench/system_benchmarks/tree/qubo/qubo_generator).
 
