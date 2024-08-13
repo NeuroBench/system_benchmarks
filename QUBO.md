@@ -50,7 +50,7 @@ Larger workloads cannot be reasonably globally solved. The DWave Tabu sampler wi
 
 The NeuroBench authors will provide benchmarking CPU solutions up to 5000 nodes. Submissions are encouraged to continue scaling up the workload size along the pattern to demonstrate the capacity of their systems. The first group that tackles workloads of an unprecedented size should provide the benchmark solutions via a pull request.
 
-Code for the generator for MIS, as well as a wrapper to run DWave's Tabu search, is located here: [https://github.com/NeuroBench/system_benchmarks/tree/qubo/qubo_generator](https://github.com/NeuroBench/system_benchmarks/tree/qubo/qubo_generator).
+The dataset workload generator and scripts for the DWave Tabu sampler to compute optimal costs are available in the QUBO sub-directory of this repo.
 
 This code is expected to be used as the front-end data generator for all submissions. Submitters may take the general graph descriptions and modify the structure, this is not included in the reported results.
 The code also supports arbitrary workload generation, which is expected to be used to measure the largest supported workload size of the system (see Task and Metrics).
