@@ -1,0 +1,10 @@
+# local package
+-e .
+
+numpy
+matplotlib
+torch
+librosa
+pandas
+tqdm
+pyzenodo3

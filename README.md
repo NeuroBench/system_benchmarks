@@ -1,7 +1,7 @@
-# system_benchmarks
+# NeuroBench System Benchmark Rules
 
-Currently a repo for neuromorphic system benchmark specifications.
+Many of the rules are used from MLPerf Inference, Mobile, and Tiny.
 
-### Meeting Notes
+### Benchmarks
 
-[Notes](https://docs.google.com/document/d/1pt0odDijUXK3uqt91STmND9Suxdb52dHaoln3pPwiaQ/edit?pli=1)
+Two benchmarks are included, acoustic scene classification (ASC) and quadratic unconstrained binary optimization for solving max-independent set (QUBO-MIS). The former targets edge devices while the latter targets cloud-scale computing.
