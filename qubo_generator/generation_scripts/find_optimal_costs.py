@@ -54,7 +54,7 @@ def sample_to_binary_list(sample):
 
 if __name__ == '__main__':
     benchmark = MISBenchmark('config_no_costs.csv')
-    dataset_dir = './data/qubo_mis_dataset'
+    dataset_dir = '../data/qubo_mis_dataset'
 
     # look for temp costs file
     try:
