@@ -44,7 +44,7 @@ The benchmark's workload complexity is defined such that it can automatically gr
 
 Each workload will be associated with a target optimality, which is the minimum cost found using a conventional solver algorithm.
 
-Small QUBO workloads with fewer than 1000 nodes will be solved to global optimality, corresponding to the true maximum independent set.
+Small QUBO workloads with fewer than 50 nodes will be solved to global optimality, corresponding to the true maximum independent set.
 
 Larger workloads cannot be reasonably globally solved. The DWave Tabu sampler will be used with 100 reads and 50 restarts, and the QUBO solution with the best cost found will set the target optimality for the tuning workload seeds. For evaluation workload seeds, the same method will be used to set the target optimality. 
 
