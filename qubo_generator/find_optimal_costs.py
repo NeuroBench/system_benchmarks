@@ -46,6 +46,12 @@ def check_mis_bqm(bqm, sample):
     
     return True
 
+def sample_to_binary_list(sample):
+    N = len(sample)
+    mis_nodes = [node for node in sample if sample[node] == 1]
+    l = [0 if i not in mis_nodes else 1 for i in range(N)]
+    return l
+
 if __name__ == '__main__':
     benchmark = MISBenchmark('config_no_costs.csv')
     dataset_dir = './data/qubo_mis_dataset'
@@ -64,10 +70,10 @@ if __name__ == '__main__':
         if key in costs:
             continue
 
-        if num_vertices < 1000:
+        if num_vertices < 50: # the current specification says 1000 nodes, but 50 is already large
             # brute force solve
-            # bf_costs = solve_gpu(qubo_matrix, 0)
-            bf_costs = solve_cpu(qubo_matrix.astype(np.float32), 0)
+            bf_costs = solve_gpu(qubo_matrix, 0)
+            # bf_costs = solve_cpu(qubo_matrix.astype(np.float32), 0)
             c_optimal = np.min(bf_costs)
             idx = np.argmin(bf_costs)
             sample = bits(idx, qubo_matrix.shape[0])
@@ -81,12 +87,13 @@ if __name__ == '__main__':
             bqm = BinaryQuadraticModel(qubo_matrix, "BINARY")
 
             sampler = TabuSampler()
-            # sampleset = sampler.sample(bqm, timeout=None, num_reads=100, num_restarts=50)
-            sampleset = sampler.sample(bqm, timeout=None, num_reads=10, num_restarts=5)
+            sampleset = sampler.sample(bqm, timeout=None, num_reads=100, num_restarts=50)
 
             # solver sanity check
             # while not guaranteed, it is highly likely the solver finds independent sets
             assert check_mis_bqm(bqm, sampleset.first.sample), "Solver did not find a valid MIS"
+
+            print("found min cost", int(sampleset.first.energy), "for sample", sample_to_binary_list(sampleset.first.sample), flush=True)
 
             costs[key] = int(sampleset.first.energy)
 
@@ -94,14 +101,12 @@ if __name__ == '__main__':
         with open('costs.json', 'w') as f:
             json.dump(costs, f)
 
-
     # rewrite csv
     header = ['num_vertices', 'density', 'random_seed', 'c_optimal']
     with open('default_config.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(header)
-        for nv in num_vertices:
-            for d in density:
-                for rs in random_seed:
-                    c_optimal = costs[f'{nv}_{d}_{rs}']
-                    writer.writerow([nv, d, rs, c_optimal])
+        for key, value in costs.items():
+            num_vertices, density, random_seed = key.split('_')
+            c_optimal = value
+            writer.writerow([num_vertices, density, random_seed, c_optimal])
