@@ -14,7 +14,7 @@ Audio samples are sliced into 1 second samples. The audio may be resampled to a 
 
 The train/val/test split is 41360/1320/16240 samples.
 
-A NeuroBenchDataset (PyTorch) compliant dataset file is available here: https://github.com/NeuroBench/system_benchmarks/blob/audio_scene_classification/utils/dcase_audio_scene_classification.py
+A NeuroBenchDataset (PyTorch) compliant dataset file and data download script are available in the ASC sub-directory of this repo.
 
 A download script for the data is also available here: https://github.com/NeuroBench/system_benchmarks/blob/audio_scene_classification/utils/download_dcase_dataset.py
 
