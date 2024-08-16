@@ -46,9 +46,8 @@ Each workload will be associated with a target optimality, which is the minimum 
 
 Small QUBO workloads with fewer than 50 nodes will be solved to global optimality, corresponding to the true maximum independent set.
 
-Larger workloads cannot be reasonably globally solved. The DWave Tabu sampler will be used with 100 reads and 50 restarts, and the QUBO solution with the best cost found will set the target optimality for the tuning workload seeds. For evaluation workload seeds, the same method will be used to set the target optimality. 
-
-The NeuroBench authors will provide benchmarking CPU solutions up to 5000 nodes. Submissions are encouraged to continue scaling up the workload size along the pattern to demonstrate the capacity of their systems. The first group that tackles workloads of an unprecedented size should provide the benchmark solutions via a pull request.
+Larger workloads cannot be reasonably globally solved. The [DWave Tabu CPU sampler](https://docs.ocean.dwavesys.com/projects/tabu/en/latest/intro.html) will be used with 100 reads and 50 restarts, and the QUBO solution with the best cost found will set the target optimality for the tuning workload seeds. For evaluation workload seeds, the same method will be used to set the target optimality. 
+NeuroBench will provide target optimalities for workloads up to 5000 nodes. Submissions are encouraged to continue scaling up the workload size along the pattern to demonstrate the capacity of their systems. The first group that tackles workloads of an unprecedented size should provide the benchmark solutions via a pull request.
 
 The dataset workload generator and scripts for the DWave Tabu sampler to compute optimal costs are available in the QUBO sub-directory of this repo.
 
