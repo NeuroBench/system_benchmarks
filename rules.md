@@ -31,7 +31,7 @@ The benchmark specifications can be found in the ASC and QUBO files.
 
 ## Auditing Process
 
-Each NeuroBench system track submission is subject to be audited after results are collected. During the auditing process, the results may be temporarily removed or marked as Under Audit on the official leaderboard.
+Each NeuroBench system track submission is subject to the possibility of being audited after results are collected. During the auditing process, the results may be temporarily removed or marked as Under Audit on the official leaderboard.
 
 ### NDA
 
