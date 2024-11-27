@@ -14,7 +14,7 @@ subject to no constraints.
 
 ### Approximating Maximum Independent Set
 
-The neuromorphic solvers for QUBO will be benchmarked using **Maximum Independent Set** workloads. Given an undirected graph $\mathcal{G}=(\mathcal{V}, \mathcal{E})$, an **independent set** $\mathcal{I}$ is a subset of $\mathcal{V}$ such that, for any two vertices $u, v \in \mathcal{I}$, there is no edge connecting them, i.e., $\nexists \; e \in \mathcal{E} \;s.t.\; e=(u,v) \;\vee\; e=(v,u)$. 
+The solvers for QUBO will be benchmarked using **Maximum Independent Set** workloads. Given an undirected graph $\mathcal{G}=(\mathcal{V}, \mathcal{E})$, an **independent set** $\mathcal{I}$ is a subset of $\mathcal{V}$ such that, for any two vertices $u, v \in \mathcal{I}$, there is no edge connecting them, i.e., $\nexists \; e \in \mathcal{E} \;s.t.\; e=(u,v) \;\vee\; e=(v,u)$. 
 The Maximum Independent Set (MIS) problem consists in finding an independent set with maximum cardinality, as illustrated in the following figure:
 
 <figure>
@@ -38,7 +38,7 @@ The MIS problem is NP-hard and intractable, and therefore any solver system appr
 
 The benchmark's workload complexity is defined such that it can automatically grow over time, as neuromorphic systems mature and are able to support larger problems.
 
-- Number of nodes, spaced on a logarithmic scale: 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, ...
+- Number of nodes, spaced in a pseudo-geometric progression: 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, ...
 - Density of edges: 1%, 5%, 10%, 25%
 - Problem seeds: 0, 1, 2, 3, 4 are allowed for tuning. At evaluation time, for official results NeuroBench will announce five seeds for submission. Unofficial results may use seeds which are randomly generated at runtime.
 
@@ -46,55 +46,50 @@ Each workload will be associated with a target optimality, which is the minimum 
 
 Small QUBO workloads with fewer than 50 nodes will be solved to global optimality, corresponding to the true maximum independent set.
 
-Larger workloads cannot be reasonably globally solved. The [DWave Tabu CPU sampler](https://docs.ocean.dwavesys.com/projects/tabu/en/latest/intro.html) will be used with 100 reads and 50 restarts, and the QUBO solution with the best cost found will set the target optimality for the tuning workload seeds. For evaluation workload seeds, the same method will be used to set the target optimality. 
+Larger workloads cannot be reasonably globally solved. The [DWave Tabu CPU sampler](https://docs.ocean.dwavesys.com/projects/tabu/en/latest/intro.html) will be used with 100 reads and 50 restarts, and the QUBO solution with the best cost (best-known solution, BKS) found will set the target optimality for the tuning workload seeds. For evaluation workload seeds, the same method will be used to set the target optimality. 
 NeuroBench will provide target optimalities for workloads up to 5000 nodes. Submissions are encouraged to continue scaling up the workload size along the pattern to demonstrate the capacity of their systems. The first group that tackles workloads of an unprecedented size should provide the benchmark solutions via a pull request.
 
 The dataset workload generator and scripts for the DWave Tabu sampler to compute optimal costs are available in the QUBO sub-directory of this repo.
 
-This code is expected to be used as the front-end data generator for all submissions. Submitters may take the general graph descriptions and modify the structure, this is not included in the reported results.
+This code is expected to be used as the front-end data generator for all submissions. Submitters may take the general graph descriptions and modify the structure (e.g., load into custom data structures), this is not included in the reported results.
 The code also supports arbitrary workload generation, which is expected to be used to measure the largest supported workload size of the system (see Task and Metrics).
 
 ## Task and Metrics
 
-Given each workload, report the latency and energy to meet optimality thresholds. The average over 5 seeds for each workload is officially listed, as well as standard error. Results for all 5 seeds should be included in the submission report.
+Based on the BKS found for each workload, the BKS-Gap optimality score of the solution found by the SUT is defined as
+$$
+\text{BKS-Gap} = (\frac{c - c_{\mathrm{target}}} {c_\mathrm{target}})\ ,
+$$ 
+where $c_\mathrm{target}$ is the QUBO cost of the BKS, and $c$ is the cost found by the SUT. This may be reported as a percentage gap by multiplying by 100. If the SUT manages to beat the BKS, then the BKS-Gap will be negative.
 
-The solver needs to include a module that tracks the cost of considered solutions, to identify if it has reached the target optimality. The computational demand and energy for this module must be included in the benchmarking results. 
+The QUBO task can be solved under two task scenarios, using the same workload generator as described above. The first scenario is fixed-timeout (FT), and the second scenario is time-to-solution (TTS).
+
+### Task Scenario 1: Fixed-Timeout (FT)
+
+Given each workload, the benchmark should report the BKS-Gap of the solution found by the SUT after a fixed runtime. The time begins after the graph has been loaded into the SUT. 
+
+Timeouts spread across orders of magnitude ($10^{-3}$, $10^{-2}$, $10^{-1}$, $10^{0}$, $10^{1}$, $10^{2}$). As the runtime is fixed, no measured timing metric is reported, and submissions should report **average power** over the duration of the runtime, as it is directly proportional to energy consumed. The power is averaged over the 5 seeds for each workload. 
+
+Importantly, the QUBO solver needs a module to measure the cost of its solutions, and this module should be considered as part of the SUT, thus its power must be included in the benchmarking results.
+
+### Task Scenario 2: Time-to-Solution (TTS)
+
+Given each workload, the benchmark should report the SUT **latency** and **energy** to meet BKS-Gap thresholds of 0.1, 0.05, and 0.01. If the SUT fails to reach the score thresholds, no result is reported.
+
+For latency, the time begins when the workload graph has been loaded to the system, and ends when the solver has detected target optimality.
+
+Energy measurements identify the energy required to reach each threshold, and is calculated as the average power consumed since the start of the workload (loaded to the system), multiplied by the latency to reach the score threshold. 
+
+As is the case for the FT scenario, the solver needs to include a module that tracks the cost of considered solutions, to identify if it has reached the target optimality. The computational demand and energy for this module must be included in the benchmarking results. 
+
+For both task scenarios, the power measurement should include all computational components, memory, and power domains which are active during the workload processing.
+
+Ultimately, as neuromorphic systems are not matured, a singular power measurement method cannot be applied to all submissions. It is the responsibility of the submitter to faithfully capture all active processing components for their system and fairly outline their methodology in the report. Official submissions are subject to potential audits during which an auditor will inspect the methodology and request additions or revisions to the results and report if necessary.
 
 No other constraints are placed on the algorithmic implementation, nor the hardware setup of the solver system. The system may process the workload using any internal representation, but it must produce the binary vector $\mathbf{x}$ which is used to calculate solution cost $\mathbf{x}^T\mathbf{Q}\mathbf{x}$ as defined above. 
 
 Algorithm and system parameter tuning is restricted, see Tuning below.
 
-### Optimality Thresholds
-
-Based on the target optimality $c_\mathrm{target}$ for each workload, the normalized optimality score of a solution is defined as 
-
-$$
-\mathrm{abs}(\frac{c - c_{\mathrm{target}}} {c_\mathrm{target}})\ .
-$$ 
-
-Where $c$ is the cost of the best solution to the QUBO found by the system at that point in time.
-
-The score thresholds are 0.1, 0.05, and 0.01.
-
-For each threshold, the submission reports the solution, the cost of the best solution, latency between start of the solver and finding the reported solution, and system energy.
-
-If the system does not reach the score threshold, no result is reported. All problem seeds must reach a score threshold in order for the result to be included in the official leaderboard, otherwise that particular result will be left blank.
-
-### Latency
-
-Latency measures the time taken in order for the system to reach the defined score thresholds.
-
-The time begins when the workload graph has been loaded to the system. It ends when the solver has detected target optimality. The time needed to transfer the solution to an external host is excluded from the benchmarking results, unless the solver needs post-processing on the host to identify the solution or its cost.
-
-### Energy
-
-Energy measurements identify the energy required to reach each defined score threshold.
-
-The energy is caluclated as the average power consumed since the start of the workload (loaded to the system), multiplied by the latency to reach the score threshold.
-
-The power measurement should include all computational components, memory, and power domains which are active during the workload processing.
-
-Ultimately, as neuromorphic systems are not matured, a singular power measurement method cannot be applied to all submissions. It is the responsibility of the submitter to faithfully capture all active processing components for their system and fairly outline their methodology in the report. Official submissions are subject to potential audits during which an auditor will inspect the methodology and request additions or revisions to the results and report if necessary.
 
 ### Maximum supported workload size
 

@@ -73,14 +73,10 @@ class SceneData():
         self.num_classes = len(np.unique(self.valid_scenes))
         self.all_files = {}
 
-        # The dataset file naming convention is train/test/eval, which corresponds to the more 
-        # standard train/val/test. Where val is for training/tuning and test is the held-out set to report accuracy.
-
         self.all_files["train"] = pd.read_csv(self.meta_files_dir / "fold1_train.csv", delimiter='\t')
-        self.all_files["val"] = pd.read_csv(self.meta_files_dir / "fold1_test.csv", delimiter='\t')
         self.all_files["test"] = pd.read_csv(self.meta_files_dir / "fold1_evaluate.csv", delimiter='\t')
-        self.filtered_files = {"x_train": [], "y_train": [], "x_val": [], "y_val": [], "x_test": [], "y_test": []}
-        self.data = {"x_train": None, "y_train": None, "x_val": None, "y_val": None, "x_test": None, "y_test": None}
+        self.filtered_files = {"x_train": [], "y_train": [], "x_test": [], "y_test": []}
+        self.data = {"x_train": None, "y_train": None, "x_test": None, "y_test": None}
 
         # Adding extra files
         train_files = np.genfromtxt(self.meta_files_dir / "fold1_train.csv", dtype=str, skip_header=1)[:, 0]
@@ -100,7 +96,7 @@ class SceneData():
         else:
             glob_patterns = [".*.wav"]
 
-        for split in ["train", "val", "test"]:
+        for split in ["train", "test"]:
             for idx, scene in enumerate(valid_scenes):
                 x = self._filter_files(self.all_files[split], scene, glob_patterns)
                 self.filtered_files[f"x_{split}"].extend(x)
@@ -117,7 +113,7 @@ class SceneData():
         return files_from_recdevice
 
     def _load_all_data(self):
-        for split in ["train", "val", "test"]:
+        for split in ["train", "test"]:
             length = len(self.filtered_files[f"x_{split}"])
             print(f"Loading {split} data:")
             results = thread_map(self._load_data, zip(list(range(length)), [split] * length))
@@ -151,8 +147,6 @@ class SceneData():
         torch.save({
             "x_train": self.data["x_train"],
             "y_train": self.data["y_train"],
-            "x_val": self.data["x_val"],
-            "y_val": self.data["y_val"],
             "x_eval": self.data["x_test"],
             "y_eval": self.data["y_test"],
         }, dir_path / (f_path.name + ".pt"))
@@ -161,17 +155,14 @@ class SceneData():
         data = torch.load(file_path)
         self.data["x_train"] = data["x_train"]
         self.data["y_train"] = data["y_train"]
-        self.data["x_val"] = data["x_val"]
-        self.data["y_val"] = data["y_val"]
         self.data["x_test"] = data["x_test"]
         self.data["y_test"] = data["y_test"]
 
     def get_datasets(self):
         self.train_dataset = SceneDataset(self.data["x_train"], self.data["y_train"])
-        self.val_dataset = SceneDataset(self.data["x_val"], self.data["y_val"])
         self.test_dataset = SceneDataset(self.data["x_test"], self.data["y_test"])
 
-        return self.train_dataset, self.val_dataset, self.test_dataset
+        return self.train_dataset, self.test_dataset
 
 
 if __name__ == "__main__":
@@ -185,13 +176,12 @@ if __name__ == "__main__":
                         max_samples_per_scene=10,
                         resize_time=1)
 
-    train, val, test = dataset.get_datasets()
+    train, test = dataset.get_datasets()
     assert train.x.shape[0] == train.y.shape[0] == 41360
-    assert val.x.shape[0] == val.y.shape[0] == 1320
     assert test.x.shape[0] == test.y.shape[0] == 16240
 
-    assert train.x.shape[1] == val.x.shape[1] == test.x.shape[1] == 8000
-    assert train.y.shape[1] == val.y.shape[1] == test.y.shape[1] == 4
+    assert train.x.shape[1] == test.x.shape[1] == 8000
+    assert train.y.shape[1] == test.y.shape[1] == 4
 
     for key, value in dataset.data.items():
         print(key, value.shape)
