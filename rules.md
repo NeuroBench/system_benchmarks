@@ -1,14 +1,3 @@
-## Timeline
-
-The target date is to publish an arXiv article on December 1, 2024.
-
-The article will include 
-- Specifications of each benchmark task
-- Outlines of each submitted system's general architecture, compute process, and measurement methodology
-- A table of results including all submissions
-
-TODO: After this, results will be officially collected and announced annually.
-
 ## Submission Procedure
 
 TODO

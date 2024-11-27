@@ -12,17 +12,17 @@ Of the 9 real / simulated recoding devices, 1 real device is used: "a"
 
 Audio samples are sliced into 1 second samples. The audio may be resampled to a different frequency as a pre-processing step, which is not included in inference measurement.
 
-The train/val/test split is 41360/1320/16240 samples.
+The train/test split is 41360/16240 samples. 
 
 A NeuroBenchDataset (PyTorch) compliant dataset file and data download script are available in the ASC sub-directory of this repo.
 
 A download script for the data is also available here: https://github.com/NeuroBench/system_benchmarks/blob/audio_scene_classification/utils/download_dcase_dataset.py
 
-This code is expected to be used as the front-end data generator for all submissions. The data may be reformatted into a different framework, this is not included in inference measurement.
+This code is expected to be used as the front-end data generator for all submissions. The data may be reformatted into a different framework than PyTorch, this is not included in inference measurement.
 
 ## Task and Metrics
 
-After training a model using the training and validation set, the submitter will report test set accuracy, as well as latency and energy per inference on the system. The test split should not be used to train or tune the model, only the train and val splits.
+After training a model using the training and validation set, the submitter will report test set accuracy, as well as execution time and energy per inference on the system. The test split should not be used to train or tune the model, only the train split. Submitters may define their own validation split or perform cross-validation using the train samples.
 
 Audio samples will be processed in batch-size 1, in which one sample is processed at a time and the next sample is not processed until the previous one is finished.
 
@@ -30,7 +30,7 @@ The general compute flow consists of three steps: pre-processing, inference, and
 
 One inference is defined as the processing of one second of audio data. Inference is separate from classification because systems are often intended to process samples as sequences over time, rather than all at once, and the classification may be available before the whole data sequence is seen. Classification thus does not need to be included in the benchmark measurement.
 
-Pre-processing in general can be defined as feature extraction or the conversion of raw audio data into a format that is suitable for inference. Latency and energy of pre-processing must be included in benchmark measurement, and will be reported separately from inference. 
+Pre-processing in general can be defined as feature extraction or the conversion of raw audio data into a format that is suitable for inference. Execution time and energy of pre-processing must be included in benchmark measurement, and will be reported separately from inference. 
 
 In certain systems, e.g. Synsense Xylo, pre-processing blocks use analog hardware on-chip to directly convert real-time analog microphone output to digital spikes for inference. In order to operate inference from a digitally-encoded dataset, this pre-processing must be simulated and the spikes are sent through a side-channel directly to the inference block. For such cases, the reported pre-processing measurements will be for the analog hardware running in real-time on the dataset audio played over speakers into the device microphone.
 
@@ -38,21 +38,19 @@ In certain systems, e.g. Synsense Xylo, pre-processing blocks use analog hardwar
 
 Accuracy of the predictions on the test set, measured from the system and not in any software simulation.
 
-### Latency
+### Execution Time
 
-Latency is the average time per pre-processing and inference. The final result should be averaged over all samples in the test set, and include standard error.
+Execution time is the average time per pre-processing and inference. The final result should be averaged over all samples in the test set, and include standard error.
 
 The time begins when data has been loaded into on-board or on-chip memory and is prepared to be processed. The time ends when the last timestep of the sequence has completed processing.
 
 ### Power / Energy
 
-Floor power and total power should be reported, where floor power is power of the chip when it has been configured and it prepared to begin processing. Note that this is different from idle power, in which the device may be in a lower-power sleeping state. Total power is the average power consumed during processing.
+Idle power and active power should be reported, where idle power is power of the chip when it has been configured and it has prepared to begin processing. Note that this should not measure the device in a lower-power sleeping state. Active power is the average power consumed during processing. The difference between active power and idle power should be reported as dynamic power. 
 
-Both floor and total power should be converted to floor and total energy per inference by multiplying power by the averaged inference latency. For real-time processing, e.g. analog pre-processing, the latency should simply equal the data time (one second).
+Power should be converted to energy by multiplying power by the averaged execution time. The power measurement should include all computational components and power domains which are active during the workload processing. 
 
-The power measurement should include all computational components and power domains which are active during the workload processing. 
-
-If applicable, power may be measured over longer data sequences (e.g. 5 seconds rather than 1 second), such that configuration costs are amortized over a longer period of processing. This should be done separately from accuracy and latency experiments, and should be clearly detailed in the associated submission report.
+If applicable, power may be measured over longer data sequences (e.g. 5 seconds rather than 1 second), such that configuration costs are amortized over a longer period of processing. This should be done separately from accuracy and execution time experiments, and should be clearly detailed in the associated submission report.
 
 Ultimately, as neuromorphic systems are not matured, a singular power measurement method cannot be applied to all submissions. It is the responsibility of the submitter to faithfully capture all active processing components for their system and fairly outline their methodology in the report. Official submissions are subject to potential audits during which an auditor will inspect the methodology and request additions or revisions to the results and report if necessary.
 
